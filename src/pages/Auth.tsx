@@ -2,6 +2,9 @@
 import React from 'react';
 import AuthForm from '@/components/auth/AuthForm';
 import { Droplets } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { ArrowLeft } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Auth: React.FC = () => {
   return (
@@ -9,7 +12,17 @@ const Auth: React.FC = () => {
       <div className="flex-1 flex flex-col md:flex-row">
         {/* Left side - Auth form */}
         <div className="w-full md:w-1/2 flex items-center justify-center p-8 bg-background">
-          <AuthForm />
+          <div className="w-full max-w-md">
+            <div className="mb-6">
+              <Button variant="ghost" asChild className="gap-2">
+                <Link to="/">
+                  <ArrowLeft size={16} />
+                  Back to Home
+                </Link>
+              </Button>
+            </div>
+            <AuthForm />
+          </div>
         </div>
         
         {/* Right side - Hero image / branding */}
