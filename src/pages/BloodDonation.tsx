@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
@@ -361,7 +360,7 @@ const BloodDonation: React.FC = () => {
                       
                       <div className="bg-muted p-6 rounded-lg">
                         <h3 className="text-xl font-semibold mb-2 flex items-center">
-                          <Drop className="h-6 w-6 mr-2 text-primary" />
+                          <Droplets className="h-6 w-6 mr-2 text-primary" />
                           Pre-Donation Tips
                         </h3>
                         <ul className="list-disc list-inside space-y-2 text-muted-foreground">
