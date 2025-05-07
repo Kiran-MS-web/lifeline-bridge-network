@@ -4,7 +4,10 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
+import RouteGuard from "./components/auth/RouteGuard";
 import Index from "./pages/Index";
+import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
@@ -21,16 +24,43 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/request" element={<BloodRequest />} />
-          <Route path="/donate" element={<BloodDonation />} />
-          <Route path="/blood-check" element={<BloodCheck />} />
-          <Route path="/report" element={<ReportIssue />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <AuthProvider>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/dashboard" element={
+              <RouteGuard>
+                <Dashboard />
+              </RouteGuard>
+            } />
+            <Route path="/profile" element={
+              <RouteGuard>
+                <Profile />
+              </RouteGuard>
+            } />
+            <Route path="/request" element={
+              <RouteGuard>
+                <BloodRequest />
+              </RouteGuard>
+            } />
+            <Route path="/donate" element={
+              <RouteGuard>
+                <BloodDonation />
+              </RouteGuard>
+            } />
+            <Route path="/blood-check" element={
+              <RouteGuard>
+                <BloodCheck />
+              </RouteGuard>
+            } />
+            <Route path="/report" element={
+              <RouteGuard>
+                <ReportIssue />
+              </RouteGuard>
+            } />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

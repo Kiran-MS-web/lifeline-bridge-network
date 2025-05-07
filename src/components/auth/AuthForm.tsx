@@ -5,6 +5,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
+import { useAuth } from '@/context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const AuthForm: React.FC = () => {
   const [loginEmail, setLoginEmail] = useState('');
@@ -13,8 +15,19 @@ const AuthForm: React.FC = () => {
   const [registerPassword, setRegisterPassword] = useState('');
   const [registerName, setRegisterName] = useState('');
   const [registerPhone, setRegisterPhone] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   
-  const handleLogin = (e: React.FormEvent) => {
+  const { signIn, signUp, user } = useAuth();
+  const navigate = useNavigate();
+  
+  // Redirect if user is already logged in
+  React.useEffect(() => {
+    if (user) {
+      navigate('/dashboard');
+    }
+  }, [user, navigate]);
+  
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!loginEmail || !loginPassword) {
@@ -22,13 +35,18 @@ const AuthForm: React.FC = () => {
       return;
     }
     
-    // Here we would normally authenticate with an API
-    console.log('Login attempt', { loginEmail, loginPassword });
-    
-    toast.success('Login successful!');
+    try {
+      setIsLoading(true);
+      await signIn(loginEmail, loginPassword);
+      // The redirect is handled by the AuthContext
+    } catch (error) {
+      console.error('Login error:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
   
-  const handleRegister = (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!registerName || !registerEmail || !registerPassword || !registerPhone) {
@@ -36,19 +54,18 @@ const AuthForm: React.FC = () => {
       return;
     }
     
-    // Here we would normally register with an API
-    console.log('Register attempt', { 
-      registerName, 
-      registerEmail, 
-      registerPassword,
-      registerPhone
-    });
-    
-    toast.success('Registration successful!');
+    try {
+      setIsLoading(true);
+      await signUp(registerEmail, registerPassword, registerName, registerPhone);
+    } catch (error) {
+      console.error('Registration error:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
   
   return (
-    <div className="form-container">
+    <div className="form-container max-w-md w-full mx-auto p-6 bg-card rounded-lg shadow-md">
       <Tabs defaultValue="login" className="w-full">
         <TabsList className="grid w-full grid-cols-2 mb-6">
           <TabsTrigger value="login" className="text-lg py-3">Login</TabsTrigger>
@@ -66,6 +83,7 @@ const AuthForm: React.FC = () => {
                 value={loginEmail}
                 onChange={(e) => setLoginEmail(e.target.value)}
                 className="text-base p-6"
+                disabled={isLoading}
               />
             </div>
             
@@ -83,10 +101,17 @@ const AuthForm: React.FC = () => {
                 value={loginPassword}
                 onChange={(e) => setLoginPassword(e.target.value)}
                 className="text-base p-6"
+                disabled={isLoading}
               />
             </div>
             
-            <Button type="submit" className="w-full text-lg py-6">Sign In</Button>
+            <Button 
+              type="submit" 
+              className="w-full text-lg py-6"
+              disabled={isLoading}
+            >
+              {isLoading ? 'Signing In...' : 'Sign In'}
+            </Button>
           </form>
         </TabsContent>
         
@@ -100,6 +125,7 @@ const AuthForm: React.FC = () => {
                 value={registerName}
                 onChange={(e) => setRegisterName(e.target.value)}
                 className="text-base p-6"
+                disabled={isLoading}
               />
             </div>
             
@@ -112,6 +138,7 @@ const AuthForm: React.FC = () => {
                 value={registerEmail}
                 onChange={(e) => setRegisterEmail(e.target.value)}
                 className="text-base p-6"
+                disabled={isLoading}
               />
             </div>
             
@@ -124,6 +151,7 @@ const AuthForm: React.FC = () => {
                 value={registerPhone}
                 onChange={(e) => setRegisterPhone(e.target.value)}
                 className="text-base p-6"
+                disabled={isLoading}
               />
             </div>
             
@@ -136,10 +164,17 @@ const AuthForm: React.FC = () => {
                 value={registerPassword}
                 onChange={(e) => setRegisterPassword(e.target.value)}
                 className="text-base p-6"
+                disabled={isLoading}
               />
             </div>
             
-            <Button type="submit" className="w-full text-lg py-6">Create Account</Button>
+            <Button 
+              type="submit" 
+              className="w-full text-lg py-6"
+              disabled={isLoading}
+            >
+              {isLoading ? 'Creating Account...' : 'Create Account'}
+            </Button>
             
             <p className="text-center text-sm text-muted-foreground mt-4">
               By registering, you agree to our 

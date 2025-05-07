@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,32 +10,113 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Switch } from '@/components/ui/switch';
 import BloodTypeSelector from '@/components/common/BloodTypeSelector';
 import { toast } from 'sonner';
+import { getProfile, updateProfile, type Profile as ProfileType } from '@/services/profileService';
+import { useAuth } from '@/context/AuthContext';
 
 type BloodType = 'A+' | 'A-' | 'B+' | 'B-' | 'AB+' | 'AB-' | 'O+' | 'O-';
 
 const Profile: React.FC = () => {
-  const [name, setName] = useState('John Doe');
-  const [email, setEmail] = useState('john.doe@example.com');
-  const [phone, setPhone] = useState('+1 (555) 123-4567');
-  const [address, setAddress] = useState('123 Main Street, City, State');
+  const { user } = useAuth();
+  const [profile, setProfile] = useState<ProfileType | null>(null);
+  const [loading, setLoading] = useState(true);
+  
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [address, setAddress] = useState('');
   const [bloodType, setBloodType] = useState<BloodType>('A+');
-  const [isDonor, setIsDonor] = useState(true);
+  const [isDonor, setIsDonor] = useState(false);
   const [allowEmergencyContacts, setAllowEmergencyContacts] = useState(true);
   
-  const handleProfileUpdate = (e: React.FormEvent) => {
+  useEffect(() => {
+    const loadProfile = async () => {
+      if (!user) return;
+      
+      setLoading(true);
+      try {
+        const profileData = await getProfile();
+        
+        if (profileData) {
+          setProfile(profileData);
+          setName(profileData.full_name || '');
+          setPhone(profileData.phone_number || '');
+          setAddress(profileData.address || '');
+          setBloodType((profileData.blood_type as BloodType) || 'A+');
+          setIsDonor(profileData.is_donor || false);
+        }
+        
+        // Set email from auth user
+        if (user.email) {
+          setEmail(user.email);
+        }
+      } catch (error) {
+        console.error('Failed to load profile:', error);
+        toast.error('Failed to load profile');
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    loadProfile();
+  }, [user]);
+  
+  const handleProfileUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast.success('Profile updated successfully!');
+    
+    try {
+      const updated = await updateProfile({
+        full_name: name,
+        phone_number: phone,
+        address: address
+      });
+      
+      if (updated) {
+        setProfile(updated);
+        toast.success('Profile updated successfully!');
+      }
+    } catch (error) {
+      console.error('Failed to update profile:', error);
+      toast.error('Failed to update profile');
+    }
   };
   
-  const handleMedicalInfoUpdate = (e: React.FormEvent) => {
+  const handleMedicalInfoUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast.success('Medical information updated successfully!');
+    
+    try {
+      const updated = await updateProfile({
+        blood_type: bloodType,
+        is_donor: isDonor
+      });
+      
+      if (updated) {
+        setProfile(updated);
+        toast.success('Medical information updated successfully!');
+      }
+    } catch (error) {
+      console.error('Failed to update medical info:', error);
+      toast.error('Failed to update medical information');
+    }
   };
   
   const handlePreferencesUpdate = (e: React.FormEvent) => {
     e.preventDefault();
     toast.success('Preferences updated successfully!');
   };
+
+  if (loading) {
+    return (
+      <>
+        <Header />
+        <main className="container mx-auto px-4 py-8">
+          <div className="flex justify-center items-center min-h-[60vh]">
+            <p className="text-lg">Loading profile...</p>
+          </div>
+        </main>
+        <Footer />
+      </>
+    );
+  }
 
   return (
     <>
@@ -75,8 +156,8 @@ const Profile: React.FC = () => {
                         id="email" 
                         type="email"
                         value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        className="text-base p-6"
+                        disabled
+                        className="text-base p-6 bg-muted"
                       />
                     </div>
                     
