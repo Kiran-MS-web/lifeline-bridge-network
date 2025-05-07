@@ -26,9 +26,13 @@ export type BloodRequest = {
 };
 
 export const getDonationHistory = async (): Promise<BloodDonation[]> => {
+  const { data: userResponse } = await supabase.auth.getUser();
+  if (!userResponse.user) return [];
+  
   const { data, error } = await supabase
     .from('blood_donations')
     .select('*')
+    .eq('user_id', userResponse.user.id)
     .order('donation_date', { ascending: false });
     
   if (error) {
@@ -39,10 +43,16 @@ export const getDonationHistory = async (): Promise<BloodDonation[]> => {
   return data || [];
 };
 
-export const addDonation = async (donation: Omit<BloodDonation, 'id' | 'user_id' | 'created_at'>): Promise<BloodDonation | null> => {
+export const addDonation = async (donation: Omit<BloodDonation, 'id' | 'created_at'>): Promise<BloodDonation | null> => {
+  const { data: userResponse } = await supabase.auth.getUser();
+  if (!userResponse.user) return null;
+  
   const { data, error } = await supabase
     .from('blood_donations')
-    .insert(donation)
+    .insert({
+      ...donation,
+      user_id: userResponse.user.id
+    })
     .select()
     .single();
     
@@ -55,9 +65,13 @@ export const addDonation = async (donation: Omit<BloodDonation, 'id' | 'user_id'
 };
 
 export const getBloodRequests = async (): Promise<BloodRequest[]> => {
+  const { data: userResponse } = await supabase.auth.getUser();
+  if (!userResponse.user) return [];
+  
   const { data, error } = await supabase
     .from('blood_requests')
     .select('*')
+    .eq('user_id', userResponse.user.id)
     .order('request_date', { ascending: false });
     
   if (error) {
@@ -68,10 +82,16 @@ export const getBloodRequests = async (): Promise<BloodRequest[]> => {
   return data || [];
 };
 
-export const addBloodRequest = async (request: Omit<BloodRequest, 'id' | 'user_id' | 'created_at' | 'updated_at'>): Promise<BloodRequest | null> => {
+export const addBloodRequest = async (request: Omit<BloodRequest, 'id' | 'created_at' | 'updated_at' | 'user_id'>): Promise<BloodRequest | null> => {
+  const { data: userResponse } = await supabase.auth.getUser();
+  if (!userResponse.user) return null;
+  
   const { data, error } = await supabase
     .from('blood_requests')
-    .insert(request)
+    .insert({
+      ...request,
+      user_id: userResponse.user.id
+    })
     .select()
     .single();
     
