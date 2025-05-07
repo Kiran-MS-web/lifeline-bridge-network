@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
@@ -9,7 +8,7 @@ import {
   CardHeader, 
   CardTitle 
 } from '@/components/ui/card';
-import { Drop, User, Bell, Truck } from 'lucide-react';
+import { Droplets, User, Bell, Truck } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -50,7 +49,7 @@ const Dashboard: React.FC = () => {
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-3xl md:text-4xl font-bold">Dashboard</h1>
           <Badge variant="outline" className="flex items-center gap-1 text-sm py-2 px-3">
-            <Drop className="h-4 w-4" />
+            <Droplets className="h-4 w-4" />
             Blood Type: A+
           </Badge>
         </div>
@@ -60,7 +59,7 @@ const Dashboard: React.FC = () => {
             <CardHeader className="pb-2">
               <CardTitle className="text-lg font-medium">
                 <div className="flex items-center gap-2">
-                  <Drop className="h-5 w-5 text-primary" />
+                  <Droplets className="h-5 w-5 text-primary" />
                   Donation Status
                 </div>
               </CardTitle>

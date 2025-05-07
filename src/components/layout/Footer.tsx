@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { Drop, Phone, Mail, MapPin } from 'lucide-react';
+import { Droplets, Phone, Mail, MapPin } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const Footer = () => {
@@ -10,7 +9,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="space-y-4">
             <div className="flex items-center space-x-2">
-              <Drop size={28} className="text-primary" />
+              <Droplets size={28} className="text-primary" />
               <span className="text-xl font-bold">LifeLine</span>
             </div>
             <p className="text-muted-foreground">

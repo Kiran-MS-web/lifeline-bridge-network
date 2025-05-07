@@ -1,10 +1,10 @@
 
 import React from 'react';
-import { Drop, Truck, Search, AlertTriangle, Hospital, User, Wheelchair } from 'lucide-react';
+import { Droplets, Truck, Search, AlertTriangle, Hospital, User, Accessibility } from 'lucide-react';
 
 const features = [
   {
-    icon: <Drop className="h-10 w-10 text-primary" />,
+    icon: <Droplets className="h-10 w-10 text-primary" />,
     title: 'Blood Donation',
     description: 'Register as a donor and help save lives in your community.'
   },
@@ -24,7 +24,7 @@ const features = [
     description: 'Store and manage your blood type information securely.'
   },
   {
-    icon: <Wheelchair className="h-10 w-10 text-primary" />,
+    icon: <Accessibility className="h-10 w-10 text-primary" />,
     title: 'Accessibility',
     description: 'Interface designed for elderly and disabled users.'
   },

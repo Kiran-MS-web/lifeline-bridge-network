@@ -30,7 +30,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { format } from 'date-fns';
-import { CalendarIcon, Drop } from 'lucide-react';
+import { CalendarIcon, Droplets } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
@@ -383,7 +383,7 @@ const BloodDonation: React.FC = () => {
             <Card className="mb-6 bg-gradient-to-br from-red-50 to-white">
               <CardHeader>
                 <CardTitle className="flex items-center">
-                  <Drop className="h-6 w-6 mr-2 text-primary" />
+                  <Droplets className="h-6 w-6 mr-2 text-primary" />
                   Blood Donation Benefits
                 </CardTitle>
               </CardHeader>
