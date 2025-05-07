@@ -3,9 +3,12 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Droplets, Menu, X, User, Bell } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { AuthButtons } from '@/components/layout/AuthButtons';
+import { useAuth } from '@/context/AuthContext';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user } = useAuth();
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
@@ -40,14 +43,14 @@ const Header = () => {
           <Button variant="ghost" size="icon">
             <Bell size={20} />
           </Button>
-          <Link to="/profile">
-            <Button variant="ghost" size="icon">
-              <User size={20} />
-            </Button>
-          </Link>
-          <Link to="/auth">
-            <Button variant="default">Sign In</Button>
-          </Link>
+          {user && (
+            <Link to="/profile">
+              <Button variant="ghost" size="icon">
+                <User size={20} />
+              </Button>
+            </Link>
+          )}
+          <AuthButtons />
         </div>
 
         {/* Mobile Menu Button */}
@@ -99,20 +102,18 @@ const Header = () => {
             >
               Report Issue
             </Link>
-            <Link 
-              to="/profile"
-              className="text-foreground hover:text-primary transition-colors py-2"
-              onClick={toggleMenu}
-            >
-              Profile
-            </Link>
-            <Link 
-              to="/auth"
-              className="text-foreground hover:text-primary transition-colors py-2" 
-              onClick={toggleMenu}
-            >
-              Sign In
-            </Link>
+            {user && (
+              <Link 
+                to="/profile"
+                className="text-foreground hover:text-primary transition-colors py-2"
+                onClick={toggleMenu}
+              >
+                Profile
+              </Link>
+            )}
+            <div className="py-2" onClick={toggleMenu}>
+              <AuthButtons />
+            </div>
           </nav>
         </div>
       )}
