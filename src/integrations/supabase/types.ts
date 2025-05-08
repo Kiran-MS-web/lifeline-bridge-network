@@ -9,6 +9,33 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      "blood requests": {
+        Row: {
+          "blood type": string
+          created_at: string
+          id: number
+          location: string | null
+          name: string | null
+          urgency: string | null
+        }
+        Insert: {
+          "blood type": string
+          created_at?: string
+          id?: number
+          location?: string | null
+          name?: string | null
+          urgency?: string | null
+        }
+        Update: {
+          "blood type"?: string
+          created_at?: string
+          id?: number
+          location?: string | null
+          name?: string | null
+          urgency?: string | null
+        }
+        Relationships: []
+      }
       blood_donations: {
         Row: {
           amount_ml: number
