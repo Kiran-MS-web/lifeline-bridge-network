@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Droplets, Truck, Search, AlertTriangle, Hospital, User, Accessibility } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 const features = [
   {
@@ -37,22 +38,41 @@ const features = [
 
 const Features: React.FC = () => {
   return (
-    <section className="py-16 md:py-24 bg-white">
+    <section className="py-16 md:py-24 bg-white/90 backdrop-blur-sm">
       <div className="container mx-auto px-4">
-        <h2 className="section-title">Our Services</h2>
+        <motion.h2 
+          className="section-title"
+          initial={{ opacity: 0, y: -20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+        >
+          Our Services
+        </motion.h2>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
           {features.map((feature, index) => (
-            <div 
+            <motion.div 
               key={index}
-              className="p-6 rounded-2xl border bg-card shadow-sm hover:shadow-md transition-shadow"
+              className="p-6 rounded-2xl border bg-card shadow-sm hover:shadow-lg transition-shadow"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              whileHover={{ 
+                y: -5,
+                boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)"
+              }}
             >
-              <div className="mb-4">
+              <motion.div 
+                className="mb-4 flex justify-center items-center h-16 w-16 rounded-full bg-primary/10 mx-auto"
+                whileHover={{ rotate: 10, scale: 1.1 }}
+              >
                 {feature.icon}
-              </div>
-              <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
-              <p className="text-muted-foreground">{feature.description}</p>
-            </div>
+              </motion.div>
+              <h3 className="text-xl font-semibold mb-2 text-center">{feature.title}</h3>
+              <p className="text-muted-foreground text-center">{feature.description}</p>
+            </motion.div>
           ))}
         </div>
       </div>
