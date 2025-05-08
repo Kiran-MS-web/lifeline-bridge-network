@@ -12,42 +12,42 @@ const features = [
     title: 'Blood Donation',
     description: 'Register as a donor and help save lives in your community.',
     link: '/donate',
-    details: 'Our blood donation service connects donors with nearby collection centers. By registering, you can track your donation history, receive notifications about urgent blood needs that match your type, and schedule regular donations. Our system will remind you when you're eligible to donate again and provide health tips to maintain optimal donation condition.'
+    details: "Our blood donation service connects donors with nearby collection centers. By registering, you can track your donation history, receive notifications about urgent blood needs that match your type, and schedule regular donations. Our system will remind you when you're eligible to donate again and provide health tips to maintain optimal donation condition."
   },
   {
     icon: <Truck className="h-10 w-10 text-primary" />,
     title: 'Urgent Delivery',
     description: 'Request emergency blood delivery to homes or hospitals.',
     link: '/request?emergency=true',
-    details: 'Our urgent delivery service ensures critical blood supplies reach patients within minutes. We operate a fleet of dedicated vehicles equipped with proper storage facilities. Our drivers are trained in medical transport protocols and take the fastest routes. The service operates 24/7 and can deliver directly to hospitals or patient homes as needed.'
+    details: "Our urgent delivery service ensures critical blood supplies reach patients within minutes. We operate a fleet of dedicated vehicles equipped with proper storage facilities. Our drivers are trained in medical transport protocols and take the fastest routes. The service operates 24/7 and can deliver directly to hospitals or patient homes as needed."
   },
   {
     icon: <Search className="h-10 w-10 text-primary" />,
     title: 'Blood Testing',
     description: 'Access free blood checking services at events or at home.',
     link: '/blood-check',
-    details: 'Our blood testing services provide comprehensive blood type identification, pathogen screening, and health monitoring. We offer both in-home testing kits and scheduled mobile clinics in community centers. Results are processed in certified labs and delivered securely through our platform, with medical professionals available to discuss any concerns.'
+    details: "Our blood testing services provide comprehensive blood type identification, pathogen screening, and health monitoring. We offer both in-home testing kits and scheduled mobile clinics in community centers. Results are processed in certified labs and delivered securely through our platform, with medical professionals available to discuss any concerns."
   },
   {
     icon: <User className="h-10 w-10 text-primary" />,
     title: 'Blood Type Profile',
     description: 'Store and manage your blood type information securely.',
     link: '/profile',
-    details: 'Your secure blood type profile lets you store critical health information that can be accessed quickly during emergencies. You control who can view your information, and our system can generate QR codes for first responders. The profile includes blood type, allergies, medical conditions, and emergency contacts - all encrypted and protected.'
+    details: "Your secure blood type profile lets you store critical health information that can be accessed quickly during emergencies. You control who can view your information, and our system can generate QR codes for first responders. The profile includes blood type, allergies, medical conditions, and emergency contacts - all encrypted and protected."
   },
   {
     icon: <Accessibility className="h-10 w-10 text-primary" />,
     title: 'Accessibility',
     description: 'Interface designed for elderly and disabled users.',
     link: '/',
-    details: 'Our platform is built with accessibility at its core. Features include high contrast modes, text-to-speech compatibility, keyboard navigation, and simplified interfaces for elderly users. We regularly conduct usability testing with diverse user groups to ensure everyone can use our services with ease, regardless of ability or technical comfort.'
+    details: "Our platform is built with accessibility at its core. Features include high contrast modes, text-to-speech compatibility, keyboard navigation, and simplified interfaces for elderly users. We regularly conduct usability testing with diverse user groups to ensure everyone can use our services with ease, regardless of ability or technical comfort."
   },
   {
     icon: <AlertTriangle className="h-10 w-10 text-primary" />,
     title: 'Issue Reporting',
     description: 'Report problems with blood delivery or quality concerns.',
     link: '/report',
-    details: 'Our issue reporting system ensures that any problems with blood delivery, quality, or service are addressed immediately. Reports are sent directly to our quality control team, who initiate investigation within 30 minutes. We maintain full transparency throughout the resolution process and use feedback to continuously improve our services.'
+    details: "Our issue reporting system ensures that any problems with blood delivery, quality, or service are addressed immediately. Reports are sent directly to our quality control team, who initiate investigation within 30 minutes. We maintain full transparency throughout the resolution process and use feedback to continuously improve our services."
   },
 ];
 
