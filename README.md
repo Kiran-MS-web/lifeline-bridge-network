@@ -1,54 +1,33 @@
-# Welcome to your Lovable project
-
-## Project info
 
 **URL**: https://lovable.dev/projects/b5bd4ba0-c206-41b4-b3d4-3ec35d7ab8fc
 
-## How can I edit this code?
+Empowering Lifesaving Blood Donation
+We connect donors, hospitals, and blood banks in a smart, real-time network designed to save lives. Every year, millions need blood, but supply often falls short. Our platform uses technology to make blood donation faster, easier, and more effective.
 
-There are several ways of editing your application.
+Key Features:
+Real-Time Donor Locator: Find and connect with nearby donors instantly using GPS.
 
-**Use Lovable**
+Blood Type Directory: View available blood types and urgent needs in real time.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/b5bd4ba0-c206-41b4-b3d4-3ec35d7ab8fc) and start prompting.
+Donor Login Portal: Donors can manage their profiles, track donations, and get alerts.
 
-Changes made via Lovable will be committed automatically to this repo.
+AI-Enhanced Landing Page: Eye-catching visuals highlight our mission and inspire action.
 
-**Use your preferred IDE**
+Easy Contact Access: Direct communication for hospitals, donors, and blood banks.
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+Mobile-Friendly: Fully responsive design lets users access the platform from any device.
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+Mobile-First, Always Ready
+Our mobile-friendly design ensures you can give or request blood anytime, anywhere. Fast alerts and live tracking mean quicker response times and more lives saved.
 
-Follow these steps:
+Join the Lifesaving Network
+Be part of a powerful community where giving blood is simple, impactful, and always needed. Together, we can save more lives—every drop counts.
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
 
-# Step 3: Install the necessary dependencies.
-npm i
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
 
-**Edit a file directly in GitHub**
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
 
 ## What technologies are used for this project?
 
@@ -60,9 +39,7 @@ This project is built with:
 - shadcn-ui
 - Tailwind CSS
 
-## How can I deploy this project?
 
-Simply open [Lovable](https://lovable.dev/projects/b5bd4ba0-c206-41b4-b3d4-3ec35d7ab8fc) and click on Share -> Publish.
 
 ## Can I connect a custom domain to my Lovable project?
 
