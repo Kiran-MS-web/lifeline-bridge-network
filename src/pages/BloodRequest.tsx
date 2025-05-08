@@ -4,6 +4,7 @@ import { useLocation } from 'react-router-dom';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import EmergencyButton from '@/components/common/EmergencyButton';
+import DeliveryTimeTracker from '@/components/common/DeliveryTimeTracker';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -25,6 +26,7 @@ import {
 } from '@/components/ui/card';
 import BloodTypeSelector from '@/components/common/BloodTypeSelector';
 import { toast } from 'sonner';
+import { motion } from 'framer-motion';
 
 type BloodType = 'A+' | 'A-' | 'B+' | 'B-' | 'AB+' | 'AB-' | 'O+' | 'O-';
 
@@ -40,6 +42,7 @@ const BloodRequest: React.FC = () => {
   const [recipientLocation, setRecipientLocation] = useState('');
   const [hospitalName, setHospitalName] = useState('');
   const [additionalInfo, setAdditionalInfo] = useState('');
+  const [submitted, setSubmitted] = useState(false);
   
   useEffect(() => {
     // Check if it's an emergency request from URL params
@@ -79,162 +82,220 @@ const BloodRequest: React.FC = () => {
     });
     
     toast.success(`Blood request submitted successfully${isEmergency ? ' as EMERGENCY!' : '!'}`);
+    setSubmitted(true);
   };
   
   return (
     <>
       <Header />
       <main className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl md:text-4xl font-bold mb-2">
+        <motion.h1 
+          className="text-3xl md:text-4xl font-bold mb-2 font-heading"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
           {isEmergency ? '🚨 EMERGENCY Blood Request' : 'Request Blood'}
-        </h1>
-        <p className="text-muted-foreground mb-8 text-lg">
+        </motion.h1>
+        <motion.p 
+          className="text-muted-foreground mb-8 text-lg"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
           {isEmergency 
             ? 'This request will be prioritized and marked as urgent. We will respond as quickly as possible.' 
             : 'Fill out the form below to request blood. All fields marked with * are required.'}
-        </p>
+        </motion.p>
         
-        <Card className={isEmergency ? 'border-red-500 border-2' : ''}>
-          <CardHeader className={isEmergency ? 'bg-red-50' : ''}>
-            <CardTitle>Blood Request Form</CardTitle>
-            <CardDescription>
-              {isEmergency 
-                ? 'Emergency requests are processed with the highest priority' 
-                : 'Please provide accurate information to help match donors'}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="space-y-3">
-                <Label htmlFor="bloodType" className="text-lg">
-                  Blood Type Needed *
-                </Label>
-                <BloodTypeSelector
-                  selectedType={selectedType}
-                  onSelect={setSelectedType}
-                />
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-3">
-                  <Label htmlFor="units" className="text-lg">Units Needed *</Label>
-                  <Select 
-                    value={units} 
-                    onValueChange={setUnits}
-                  >
-                    <SelectTrigger id="units" className="text-base p-6">
-                      <SelectValue placeholder="Select number of units" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="1">1 unit</SelectItem>
-                      <SelectItem value="2">2 units</SelectItem>
-                      <SelectItem value="3">3 units</SelectItem>
-                      <SelectItem value="4">4 units</SelectItem>
-                      <SelectItem value="5+">5+ units</SelectItem>
-                    </SelectContent>
-                  </Select>
+        {submitted && needDelivery ? (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <DeliveryTimeTracker requestLocation={recipientLocation} />
+            
+            <Card className="mb-6">
+              <CardHeader>
+                <CardTitle>Request Submitted Successfully</CardTitle>
+                <CardDescription>
+                  Your blood request has been received and is being processed.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <p><span className="font-medium">Blood Type:</span> {selectedType}</p>
+                  <p><span className="font-medium">Units:</span> {units}</p>
+                  <p><span className="font-medium">Priority:</span> {isEmergency ? 'EMERGENCY' : urgency}</p>
+                  <p><span className="font-medium">Delivery to:</span> {recipientLocation}</p>
+                  
+                  <div className="flex justify-end">
+                    <Button 
+                      variant="outline"
+                      onClick={() => setSubmitted(false)}
+                    >
+                      Make Another Request
+                    </Button>
+                  </div>
                 </div>
-                
-                <div className="space-y-3">
-                  <Label htmlFor="urgency" className="text-lg">Urgency Level *</Label>
-                  <Select 
-                    value={urgency} 
-                    onValueChange={setUrgency}
-                    disabled={isEmergency}
-                  >
-                    <SelectTrigger id="urgency" className="text-base p-6">
-                      <SelectValue placeholder="Select urgency level" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="low">Low - Within a week</SelectItem>
-                      <SelectItem value="normal">Normal - Within 48 hours</SelectItem>
-                      <SelectItem value="high">High - Within 24 hours</SelectItem>
-                      <SelectItem value="critical">Critical - ASAP</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              
-              <div className="space-y-3">
-                <Label htmlFor="recipient-name" className="text-lg">Recipient Name *</Label>
-                <Input 
-                  id="recipient-name" 
-                  placeholder="Full name of the person who needs blood" 
-                  value={recipientName}
-                  onChange={(e) => setRecipientName(e.target.value)}
-                  className="text-base p-6"
-                />
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-3">
-                  <Label htmlFor="recipient-contact" className="text-lg">Contact Number *</Label>
-                  <Input 
-                    id="recipient-contact" 
-                    placeholder="Phone number" 
-                    value={recipientContact}
-                    onChange={(e) => setRecipientContact(e.target.value)}
-                    className="text-base p-6"
-                  />
-                </div>
-                
-                <div className="space-y-3">
-                  <Label htmlFor="recipient-location" className="text-lg">Location *</Label>
-                  <Input 
-                    id="recipient-location" 
-                    placeholder="City and area" 
-                    value={recipientLocation}
-                    onChange={(e) => setRecipientLocation(e.target.value)}
-                    className="text-base p-6"
-                  />
-                </div>
-              </div>
-              
-              <div className="space-y-3">
-                <Label htmlFor="hospital-name" className="text-lg">Hospital/Medical Facility</Label>
-                <Input 
-                  id="hospital-name" 
-                  placeholder="Name of hospital or medical facility (if applicable)" 
-                  value={hospitalName}
-                  onChange={(e) => setHospitalName(e.target.value)}
-                  className="text-base p-6"
-                />
-              </div>
-              
-              <div className="flex items-start space-x-2">
-                <Checkbox 
-                  id="delivery" 
-                  checked={needDelivery} 
-                  onCheckedChange={(checked) => setNeedDelivery(checked === true)}
-                />
-                <Label 
-                  htmlFor="delivery"
-                  className="leading-normal"
-                >
-                  I need blood to be delivered to the recipient location
-                </Label>
-              </div>
-              
-              <div className="space-y-3">
-                <Label htmlFor="additional-info" className="text-lg">Additional Information</Label>
-                <Textarea 
-                  id="additional-info" 
-                  placeholder="Any additional details that might help with the request" 
-                  value={additionalInfo}
-                  onChange={(e) => setAdditionalInfo(e.target.value)}
-                  className="min-h-[100px]"
-                />
-              </div>
-              
-              <Button 
-                type="submit" 
-                className={`w-full text-lg py-6 ${isEmergency ? 'bg-red-600 hover:bg-red-700' : ''}`}
+              </CardContent>
+            </Card>
+          </motion.div>
+        ) : (
+          <Card className={isEmergency ? 'border-red-500 border-2' : ''}>
+            <CardHeader className={isEmergency ? 'bg-red-50' : ''}>
+              <CardTitle>Blood Request Form</CardTitle>
+              <CardDescription>
+                {isEmergency 
+                  ? 'Emergency requests are processed with the highest priority' 
+                  : 'Please provide accurate information to help match donors'}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <motion.form 
+                onSubmit={handleSubmit} 
+                className="space-y-6"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
               >
-                {isEmergency ? 'Submit EMERGENCY Request' : 'Submit Blood Request'}
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
+                <div className="space-y-3">
+                  <Label htmlFor="bloodType" className="text-lg">
+                    Blood Type Needed *
+                  </Label>
+                  <BloodTypeSelector
+                    selectedType={selectedType}
+                    onSelect={setSelectedType}
+                  />
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-3">
+                    <Label htmlFor="units" className="text-lg">Units Needed *</Label>
+                    <Select 
+                      value={units} 
+                      onValueChange={setUnits}
+                    >
+                      <SelectTrigger id="units" className="text-base p-6">
+                        <SelectValue placeholder="Select number of units" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="1">1 unit</SelectItem>
+                        <SelectItem value="2">2 units</SelectItem>
+                        <SelectItem value="3">3 units</SelectItem>
+                        <SelectItem value="4">4 units</SelectItem>
+                        <SelectItem value="5+">5+ units</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <Label htmlFor="urgency" className="text-lg">Urgency Level *</Label>
+                    <Select 
+                      value={urgency} 
+                      onValueChange={setUrgency}
+                      disabled={isEmergency}
+                    >
+                      <SelectTrigger id="urgency" className="text-base p-6">
+                        <SelectValue placeholder="Select urgency level" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="low">Low - Within a week</SelectItem>
+                        <SelectItem value="normal">Normal - Within 48 hours</SelectItem>
+                        <SelectItem value="high">High - Within 24 hours</SelectItem>
+                        <SelectItem value="critical">Critical - ASAP</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                
+                <div className="space-y-3">
+                  <Label htmlFor="recipient-name" className="text-lg">Recipient Name *</Label>
+                  <Input 
+                    id="recipient-name" 
+                    placeholder="Full name of the person who needs blood" 
+                    value={recipientName}
+                    onChange={(e) => setRecipientName(e.target.value)}
+                    className="text-base p-6"
+                  />
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-3">
+                    <Label htmlFor="recipient-contact" className="text-lg">Contact Number *</Label>
+                    <Input 
+                      id="recipient-contact" 
+                      placeholder="Phone number" 
+                      value={recipientContact}
+                      onChange={(e) => setRecipientContact(e.target.value)}
+                      className="text-base p-6"
+                    />
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <Label htmlFor="recipient-location" className="text-lg">Location *</Label>
+                    <Input 
+                      id="recipient-location" 
+                      placeholder="City and area" 
+                      value={recipientLocation}
+                      onChange={(e) => setRecipientLocation(e.target.value)}
+                      className="text-base p-6"
+                    />
+                  </div>
+                </div>
+                
+                <div className="space-y-3">
+                  <Label htmlFor="hospital-name" className="text-lg">Hospital/Medical Facility</Label>
+                  <Input 
+                    id="hospital-name" 
+                    placeholder="Name of hospital or medical facility (if applicable)" 
+                    value={hospitalName}
+                    onChange={(e) => setHospitalName(e.target.value)}
+                    className="text-base p-6"
+                  />
+                </div>
+                
+                <div className="flex items-start space-x-2">
+                  <Checkbox 
+                    id="delivery" 
+                    checked={needDelivery} 
+                    onCheckedChange={(checked) => setNeedDelivery(checked === true)}
+                  />
+                  <Label 
+                    htmlFor="delivery"
+                    className="leading-normal"
+                  >
+                    I need blood to be delivered to the recipient location
+                  </Label>
+                </div>
+                
+                <div className="space-y-3">
+                  <Label htmlFor="additional-info" className="text-lg">Additional Information</Label>
+                  <Textarea 
+                    id="additional-info" 
+                    placeholder="Any additional details that might help with the request" 
+                    value={additionalInfo}
+                    onChange={(e) => setAdditionalInfo(e.target.value)}
+                    className="min-h-[100px]"
+                  />
+                </div>
+                
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <Button 
+                    type="submit" 
+                    className={`w-full text-lg py-6 ${isEmergency ? 'bg-red-600 hover:bg-red-700' : ''}`}
+                  >
+                    {isEmergency ? 'Submit EMERGENCY Request' : 'Submit Blood Request'}
+                  </Button>
+                </motion.div>
+              </motion.form>
+            </CardContent>
+          </Card>
+        )}
         
         <div className="mt-8">
           <Card>

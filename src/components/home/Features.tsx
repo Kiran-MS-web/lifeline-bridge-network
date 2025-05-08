@@ -41,7 +41,7 @@ const Features: React.FC = () => {
     <section className="py-16 md:py-24 bg-white/90 backdrop-blur-sm">
       <div className="container mx-auto px-4">
         <motion.h2 
-          className="section-title"
+          className="section-title font-heading"
           initial={{ opacity: 0, y: -20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -54,7 +54,7 @@ const Features: React.FC = () => {
           {features.map((feature, index) => (
             <motion.div 
               key={index}
-              className="p-6 rounded-2xl border bg-card shadow-sm hover:shadow-lg transition-shadow"
+              className="p-6 rounded-2xl border bg-card shadow-sm hover:shadow-lg transition-shadow hover-lift"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -70,7 +70,7 @@ const Features: React.FC = () => {
               >
                 {feature.icon}
               </motion.div>
-              <h3 className="text-xl font-semibold mb-2 text-center">{feature.title}</h3>
+              <h3 className="text-xl font-semibold mb-2 text-center font-heading">{feature.title}</h3>
               <p className="text-muted-foreground text-center">{feature.description}</p>
             </motion.div>
           ))}

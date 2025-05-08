@@ -44,7 +44,7 @@ const Hero: React.FC = () => {
           </motion.div>
           
           <motion.h1 
-            className="text-4xl md:text-5xl lg:text-6xl font-bold text-center max-w-3xl"
+            className="text-4xl md:text-5xl lg:text-6xl font-bold text-center max-w-3xl font-heading"
             variants={itemVariants}
           >
             Bridging Lives Through <span className="text-primary">Blood Donation</span>
