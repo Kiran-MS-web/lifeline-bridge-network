@@ -1,8 +1,9 @@
 
 import React, { useState } from 'react';
-import { AlertTriangle, Phone, Hospital, MapPin, X } from 'lucide-react';
+import { AlertTriangle, Phone, Hospital, MapPin, X, Home } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
 
 const EmergencyButton: React.FC = () => {
   const [showDialog, setShowDialog] = useState(false);
@@ -84,9 +85,27 @@ const EmergencyButton: React.FC = () => {
                 ))}
               </div>
             </CardContent>
-            <CardFooter className="flex flex-col text-sm text-gray-500">
-              <p>These emergency contacts are available 24/7</p>
-              <p className="mt-1">For non-emergency donations, please use the regular donation form</p>
+            <CardFooter className="flex flex-col items-center space-y-4">
+              <p className="text-sm text-gray-500">These emergency contacts are available 24/7</p>
+              <div className="flex gap-3 w-full">
+                <Link to="/" className="flex-1">
+                  <Button 
+                    variant="outline" 
+                    className="w-full flex items-center justify-center gap-2"
+                    onClick={() => setShowDialog(false)}
+                  >
+                    <Home size={16} />
+                    Back to Home
+                  </Button>
+                </Link>
+                <Button 
+                  variant="ghost" 
+                  className="flex-1"
+                  onClick={() => setShowDialog(false)}
+                >
+                  Close
+                </Button>
+              </div>
             </CardFooter>
           </Card>
         </div>
