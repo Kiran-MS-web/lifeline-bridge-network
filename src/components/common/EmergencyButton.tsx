@@ -11,23 +11,129 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import NearbyDonors from './NearbyDonors';
+import useLocation from '@/hooks/useLocation';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 const EmergencyButton: React.FC = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [showDonors, setShowDonors] = useState(false);
+  const [showHospitals, setShowHospitals] = useState(false);
   const navigate = useNavigate();
+  const { loading: locationLoading, error: locationError, location } = useLocation();
 
   const handleEmergencyCall = () => {
     // In a real implementation, this would initiate an emergency call
     console.log("Emergency call initiated");
-    // For now, just redirect to the emergency request form
-    navigate("/request?emergency=true");
-    setIsDialogOpen(false);
+    // Show nearby donors section
+    setShowDonors(true);
   };
 
   const handleHomeRedirect = () => {
     navigate("/");
     setIsDialogOpen(false);
+    setShowDonors(false);
+    setShowHospitals(false);
   };
+
+  const handleFindDonors = () => {
+    setShowHospitals(false);
+    setShowDonors(true);
+  };
+
+  const nearbyHospitals = [
+    { id: 1, name: "City General Hospital", distance: "1.5 km", phone: "+1 (555) 234-5678", address: "123 Main Street" },
+    { id: 2, name: "Memorial Medical Center", distance: "2.7 km", phone: "+1 (555) 876-5432", address: "456 Oak Avenue" },
+    { id: 3, name: "Community Health Center", distance: "3.2 km", phone: "+1 (555) 987-6543", address: "789 Pine Boulevard" },
+  ];
+
+  const renderInitialOptions = () => (
+    <div className="grid grid-cols-1 gap-4 my-4">
+      <Button 
+        onClick={handleEmergencyCall} 
+        className="bg-red-600 hover:bg-red-700 py-6 flex items-center gap-3"
+      >
+        <PhoneCall className="h-5 w-5" />
+        <span className="text-lg">Request Emergency Blood</span>
+      </Button>
+      
+      <Button 
+        variant="outline" 
+        className="border-red-200 hover:bg-red-50 text-red-700 py-6 w-full flex items-center gap-3"
+        onClick={handleFindDonors}
+      >
+        <MapPin className="h-5 w-5" />
+        <span className="text-lg">Find Emergency Donors</span>
+      </Button>
+      
+      <Button 
+        variant="outline" 
+        className="py-6 flex items-center gap-3"
+        onClick={handleHomeRedirect}
+      >
+        <Home className="h-5 w-5" />
+        <span className="text-lg">Back to Home</span>
+      </Button>
+    </div>
+  );
+
+  const renderNearbyDonors = () => (
+    <div className="my-4">
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-xl font-semibold">Nearby Donors</h3>
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          className="flex items-center gap-1"
+          onClick={() => setShowDonors(false)}
+        >
+          <X className="h-4 w-4" />
+          Back
+        </Button>
+      </div>
+      <NearbyDonors 
+        userLocation={location} 
+        bloodType="All" 
+        urgency="critical"
+      />
+    </div>
+  );
+
+  const renderNearbyHospitals = () => (
+    <div className="my-4">
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-xl font-semibold">Nearby Hospitals</h3>
+        <Button 
+          variant="ghost" 
+          size="sm"
+          className="flex items-center gap-1"
+          onClick={() => setShowHospitals(false)}
+        >
+          <X className="h-4 w-4" />
+          Back
+        </Button>
+      </div>
+      <div className="space-y-3">
+        {nearbyHospitals.map(hospital => (
+          <Card key={hospital.id}>
+            <CardContent className="p-4">
+              <div className="flex justify-between items-start">
+                <div>
+                  <h4 className="font-semibold text-lg">{hospital.name}</h4>
+                  <p className="text-sm text-muted-foreground">{hospital.address}</p>
+                  <p className="text-sm">{hospital.distance} away</p>
+                </div>
+                <a href={`tel:${hospital.phone}`} className="flex items-center gap-1 text-primary hover:underline">
+                  <PhoneCall className="h-4 w-4" />
+                  {hospital.phone}
+                </a>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
 
   return (
     <>
@@ -45,7 +151,13 @@ const EmergencyButton: React.FC = () => {
         </Button>
       </motion.div>
 
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <Dialog open={isDialogOpen} onOpenChange={(open) => {
+        setIsDialogOpen(open);
+        if (!open) {
+          setShowDonors(false);
+          setShowHospitals(false);
+        }
+      }}>
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold text-red-600 flex items-center gap-2">
@@ -53,39 +165,15 @@ const EmergencyButton: React.FC = () => {
               Emergency Assistance
             </DialogTitle>
             <DialogDescription>
-              Please select an option below for immediate help
+              {!showDonors && !showHospitals ? 
+                'Please select an option below for immediate help' : 
+                'Contact a nearby donor or hospital for emergency assistance'}
             </DialogDescription>
           </DialogHeader>
 
-          <div className="grid grid-cols-1 gap-4 my-4">
-            <Button 
-              onClick={handleEmergencyCall} 
-              className="bg-red-600 hover:bg-red-700 py-6 flex items-center gap-3"
-            >
-              <PhoneCall className="h-5 w-5" />
-              <span className="text-lg">Request Emergency Blood</span>
-            </Button>
-            
-            <Link to="/request?emergency=true" className="w-full">
-              <Button 
-                variant="outline" 
-                className="border-red-200 hover:bg-red-50 text-red-700 py-6 w-full flex items-center gap-3"
-                onClick={() => setIsDialogOpen(false)}
-              >
-                <MapPin className="h-5 w-5" />
-                <span className="text-lg">Find Emergency Donors</span>
-              </Button>
-            </Link>
-            
-            <Button 
-              variant="outline" 
-              className="py-6 flex items-center gap-3"
-              onClick={handleHomeRedirect}
-            >
-              <Home className="h-5 w-5" />
-              <span className="text-lg">Back to Home</span>
-            </Button>
-          </div>
+          {!showDonors && !showHospitals && renderInitialOptions()}
+          {showDonors && renderNearbyDonors()}
+          {showHospitals && renderNearbyHospitals()}
           
           <p className="text-sm text-muted-foreground">
             For life-threatening emergencies, always call your local emergency number (911, 112, 999) first before using this app.
