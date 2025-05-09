@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation as useRouterLocation } from 'react-router-dom';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import EmergencyButton from '@/components/common/EmergencyButton';
@@ -36,7 +36,7 @@ import { AlertCircle } from 'lucide-react';
 type BloodType = 'A+' | 'A-' | 'B+' | 'B-' | 'AB+' | 'AB-' | 'O+' | 'O-';
 
 const BloodRequest: React.FC = () => {
-  const routerLocation = useLocation();
+  const routerLocation = useRouterLocation();
   const { loading: locationLoading, error: locationError, location } = useLocation();
   const [activeTab, setActiveTab] = useState<string>('form');
   const [isEmergency, setIsEmergency] = useState(false);
