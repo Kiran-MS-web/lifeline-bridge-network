@@ -1,4 +1,5 @@
-import React from 'react';
+
+import React, { useEffect, useState } from 'react';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { 
@@ -12,8 +13,33 @@ import { Droplets, User, Bell, Truck } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useAuth } from '@/context/AuthContext';
+import { getProfile, type Profile as ProfileType } from '@/services/profileService';
 
 const Dashboard: React.FC = () => {
+  const { user } = useAuth();
+  const [profile, setProfile] = useState<ProfileType | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadProfile = async () => {
+      if (!user) return;
+      
+      try {
+        const profileData = await getProfile();
+        if (profileData) {
+          setProfile(profileData);
+        }
+      } catch (error) {
+        console.error('Failed to load profile:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    loadProfile();
+  }, [user]);
+
   // Mock data
   const donationHistory = [
     { id: 1, date: '2024-05-01', location: 'City Hospital', bloodType: 'A+', status: 'Complete' },
@@ -50,7 +76,7 @@ const Dashboard: React.FC = () => {
           <h1 className="text-3xl md:text-4xl font-bold">Dashboard</h1>
           <Badge variant="outline" className="flex items-center gap-1 text-sm py-2 px-3">
             <Droplets className="h-4 w-4" />
-            Blood Type: A+
+            Blood Type: {profile?.blood_type || 'Not set'}
           </Badge>
         </div>
 
@@ -84,11 +110,21 @@ const Dashboard: React.FC = () => {
               <CardDescription>Personal and health information</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-sm space-y-1">
-                <p>John Doe</p>
-                <p>Blood Type: A+</p>
-                <p className="text-muted-foreground">Profile 80% complete</p>
-              </div>
+              {loading ? (
+                <div className="text-sm text-muted-foreground">Loading profile...</div>
+              ) : (
+                <div className="text-sm space-y-1">
+                  <p>{profile?.full_name || 'Name not set'}</p>
+                  <p>Blood Type: {profile?.blood_type || 'Not set'}</p>
+                  {profile?.phone_number && <p>Phone: {profile.phone_number}</p>}
+                  {profile?.address && <p>Address: {profile.address}</p>}
+                  <p className="text-muted-foreground mt-2">
+                    {profile?.is_donor 
+                      ? 'Registered as blood donor' 
+                      : 'Not registered as donor'}
+                  </p>
+                </div>
+              )}
             </CardContent>
           </Card>
           
