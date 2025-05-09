@@ -5,9 +5,16 @@ import { MapPin } from 'lucide-react';
 interface LocationMapProps {
   location: { lat: number; lng: number } | null;
   className?: string;
+  title?: string;
+  subtitle?: string;
 }
 
-const LocationMap: React.FC<LocationMapProps> = ({ location, className = "" }) => {
+const LocationMap: React.FC<LocationMapProps> = ({ 
+  location, 
+  className = "", 
+  title = "Current Location",
+  subtitle
+}) => {
   const mapRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
@@ -35,15 +42,17 @@ const LocationMap: React.FC<LocationMapProps> = ({ location, className = "" }) =
         <div className="bg-white/90 backdrop-blur-sm p-3 rounded-lg shadow-lg">
           <div className="flex items-center gap-2">
             <MapPin className="h-5 w-5 text-red-500" />
-            <span className="font-medium">Current Location</span>
+            <span className="font-medium">{title}</span>
           </div>
           <div className="text-sm text-muted-foreground mt-1">
             {location.lat.toFixed(6)}, {location.lng.toFixed(6)}
           </div>
         </div>
-        <div className="mt-2 text-xs text-center bg-background/80 backdrop-blur-sm px-2 py-1 rounded-md">
-          Donors in a 10km radius will be notified
-        </div>
+        {subtitle && (
+          <div className="mt-2 text-xs text-center bg-background/80 backdrop-blur-sm px-2 py-1 rounded-md">
+            {subtitle}
+          </div>
+        )}
       </div>
     </div>
   );

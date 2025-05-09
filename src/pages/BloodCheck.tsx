@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { Button } from '@/components/ui/button';
@@ -28,8 +28,11 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { format } from 'date-fns';
-import { Calendar as CalendarIcon } from 'lucide-react';
+import { Calendar as CalendarIcon, MapPin, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useLocation } from '@/hooks/useLocation';
+import LocationMap from '@/components/common/LocationMap';
+import { Checkbox } from '@/components/ui/checkbox';
 
 const BloodCheck: React.FC = () => {
   const [name, setName] = useState('');
@@ -38,6 +41,19 @@ const BloodCheck: React.FC = () => {
   const [checkType, setCheckType] = useState('home');
   const [date, setDate] = useState<Date | undefined>(undefined);
   const [timeSlot, setTimeSlot] = useState('');
+  const [useCurrentLocation, setUseCurrentLocation] = useState(false);
+  
+  // Get user's location using the useLocation hook
+  const { loading: locationLoading, error: locationError, location } = useLocation();
+  
+  // Handle automatic address update when using current location
+  useEffect(() => {
+    if (useCurrentLocation && location) {
+      // In a real app, we would use reverse geocoding to get an address
+      // For now, just use the coordinates as the address
+      setAddress(`${location.lat.toFixed(6)}, ${location.lng.toFixed(6)}`);
+    }
+  }, [useCurrentLocation, location]);
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,6 +69,7 @@ const BloodCheck: React.FC = () => {
       phone,
       address,
       checkType,
+      location: useCurrentLocation ? location : null,
       date: date ? format(date, 'yyyy-MM-dd') : '',
       timeSlot
     });
@@ -105,19 +122,7 @@ const BloodCheck: React.FC = () => {
                   </div>
                   
                   <div className="space-y-3">
-                    <Label htmlFor="address" className="text-lg">Address *</Label>
-                    <Input 
-                      id="address" 
-                      placeholder="Your home address or preferred location" 
-                      value={address}
-                      onChange={(e) => setAddress(e.target.value)}
-                      className="text-base p-6"
-                      required
-                    />
-                  </div>
-                  
-                  <div className="space-y-3">
-                    <Label className="text-lg">Check Type *</Label>
+                    <Label htmlFor="check-type" className="text-lg">Check Type *</Label>
                     <RadioGroup 
                       value={checkType}
                       onValueChange={setCheckType}
@@ -133,6 +138,74 @@ const BloodCheck: React.FC = () => {
                       </div>
                     </RadioGroup>
                   </div>
+                  
+                  {checkType === 'home' && (
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-2">
+                        <Checkbox 
+                          id="use-location" 
+                          checked={useCurrentLocation}
+                          onCheckedChange={(checked) => setUseCurrentLocation(checked as boolean)}
+                        />
+                        <Label htmlFor="use-location" className="cursor-pointer">
+                          Use my current location
+                        </Label>
+                      </div>
+                      
+                      {useCurrentLocation ? (
+                        <div className="space-y-3">
+                          {locationLoading && (
+                            <div className="flex items-center gap-2 text-muted-foreground">
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                              <span>Detecting your location...</span>
+                            </div>
+                          )}
+                          
+                          {locationError && (
+                            <div className="text-sm text-destructive">
+                              <p>Error: {locationError}</p>
+                              <p className="mt-1">Please enter your address manually or try again.</p>
+                            </div>
+                          )}
+                          
+                          {location && (
+                            <LocationMap 
+                              location={location} 
+                              className="h-48 w-full mt-2"
+                              title="Home Location" 
+                              subtitle="Our medical staff will visit this location"
+                            />
+                          )}
+                        </div>
+                      ) : (
+                        <div className="space-y-3">
+                          <Label htmlFor="address" className="text-lg">Address *</Label>
+                          <Input 
+                            id="address" 
+                            placeholder="Your home address or preferred location" 
+                            value={address}
+                            onChange={(e) => setAddress(e.target.value)}
+                            className="text-base p-6"
+                            required
+                          />
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  
+                  {checkType === 'event' && (
+                    <div className="space-y-3">
+                      <Label htmlFor="address" className="text-lg">Preferred Event Location *</Label>
+                      <Input 
+                        id="address" 
+                        placeholder="Select or enter the event location" 
+                        value={address}
+                        onChange={(e) => setAddress(e.target.value)}
+                        className="text-base p-6"
+                        required
+                      />
+                    </div>
+                  )}
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-3">
