@@ -1,115 +1,97 @@
 
 import React, { useState } from 'react';
-import { AlertTriangle, Phone, Hospital, MapPin, X, Home } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { motion } from 'framer-motion';
+import { AlertTriangle, PhoneCall, MapPin, X, Home } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const EmergencyButton: React.FC = () => {
-  const [showDialog, setShowDialog] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const navigate = useNavigate();
 
-  const emergencyContacts = [
-    {
-      type: 'Hospital',
-      name: 'City General Hospital',
-      phone: '+1 (555) 123-4567',
-      address: '123 Medical Center Blvd, Downtown',
-      icon: Hospital
-    },
-    {
-      type: 'Blood Bank',
-      name: 'Regional Blood Center',
-      phone: '+1 (555) 987-6543',
-      address: '456 Lifesaver Ave, Midtown',
-      icon: AlertTriangle
-    },
-    {
-      type: 'Mobile Blood Unit',
-      name: '24/7 Emergency Blood Service',
-      phone: '+1 (555) 789-0123',
-      address: 'Mobile unit - will come to your location',
-      icon: MapPin
-    }
-  ];
+  const handleEmergencyCall = () => {
+    // In a real implementation, this would initiate an emergency call
+    console.log("Emergency call initiated");
+    // For now, just redirect to the emergency request form
+    navigate("/request?emergency=true");
+    setIsDialogOpen(false);
+  };
+
+  const handleHomeRedirect = () => {
+    navigate("/");
+    setIsDialogOpen(false);
+  };
 
   return (
     <>
-      <Button 
-        onClick={() => setShowDialog(true)}
-        className="fixed bottom-6 right-6 bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full shadow-lg flex items-center gap-2 z-50"
+      <motion.div
+        className="fixed bottom-6 right-6 z-50"
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ delay: 1.5, type: "spring", stiffness: 200, damping: 15 }}
       >
-        <AlertTriangle size={20} />
-        <span>Emergency</span>
-      </Button>
+        <Button
+          onClick={() => setIsDialogOpen(true)}
+          className="h-16 w-16 rounded-full bg-red-600 hover:bg-red-700 shadow-lg flex items-center justify-center"
+        >
+          <AlertTriangle className="h-8 w-8 text-white" />
+        </Button>
+      </motion.div>
 
-      {showDialog && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <Card className="w-full max-w-md bg-white border-red-500 border-2">
-            <CardHeader className="bg-red-50">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-2xl text-red-600 flex items-center gap-2">
-                  <AlertTriangle />
-                  Emergency Blood Contacts
-                </CardTitle>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  onClick={() => setShowDialog(false)}
-                >
-                  <X />
-                </Button>
-              </div>
-              <CardDescription>
-                Call these numbers immediately for emergency blood requirements
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="pt-6">
-              <div className="space-y-4">
-                {emergencyContacts.map((contact, index) => (
-                  <div key={index} className="flex items-start gap-3 p-3 border rounded-lg hover:bg-gray-50">
-                    <div className="text-red-500 mt-1">
-                      <contact.icon size={24} />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="font-medium">{contact.name}</h3>
-                      <p className="text-sm text-gray-500">{contact.type} • {contact.address}</p>
-                      <a 
-                        href={`tel:${contact.phone.replace(/\D/g,'')}`} 
-                        className="flex items-center gap-1 text-primary mt-1 font-medium"
-                      >
-                        <Phone size={16} />
-                        {contact.phone}
-                      </a>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-            <CardFooter className="flex flex-col items-center space-y-4">
-              <p className="text-sm text-gray-500">These emergency contacts are available 24/7</p>
-              <div className="flex gap-3 w-full">
-                <Link to="/" className="flex-1">
-                  <Button 
-                    variant="outline" 
-                    className="w-full flex items-center justify-center gap-2"
-                    onClick={() => setShowDialog(false)}
-                  >
-                    <Home size={16} />
-                    Back to Home
-                  </Button>
-                </Link>
-                <Button 
-                  variant="ghost" 
-                  className="flex-1"
-                  onClick={() => setShowDialog(false)}
-                >
-                  Close
-                </Button>
-              </div>
-            </CardFooter>
-          </Card>
-        </div>
-      )}
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold text-red-600 flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5" />
+              Emergency Assistance
+            </DialogTitle>
+            <DialogDescription>
+              Please select an option below for immediate help
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="grid grid-cols-1 gap-4 my-4">
+            <Button 
+              onClick={handleEmergencyCall} 
+              className="bg-red-600 hover:bg-red-700 py-6 flex items-center gap-3"
+            >
+              <PhoneCall className="h-5 w-5" />
+              <span className="text-lg">Request Emergency Blood</span>
+            </Button>
+            
+            <Link to="/request?emergency=true" className="w-full">
+              <Button 
+                variant="outline" 
+                className="border-red-200 hover:bg-red-50 text-red-700 py-6 w-full flex items-center gap-3"
+                onClick={() => setIsDialogOpen(false)}
+              >
+                <MapPin className="h-5 w-5" />
+                <span className="text-lg">Find Emergency Donors</span>
+              </Button>
+            </Link>
+            
+            <Button 
+              variant="outline" 
+              className="py-6 flex items-center gap-3"
+              onClick={handleHomeRedirect}
+            >
+              <Home className="h-5 w-5" />
+              <span className="text-lg">Back to Home</span>
+            </Button>
+          </div>
+          
+          <p className="text-sm text-muted-foreground">
+            For life-threatening emergencies, always call your local emergency number (911, 112, 999) first before using this app.
+          </p>
+        </DialogContent>
+      </Dialog>
     </>
   );
 };
