@@ -198,7 +198,22 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      admin_blood_requests: {
+        Row: {
+          blood_type: string | null
+          hospital_name: string | null
+          id: string | null
+          notes: string | null
+          recipient_contact: string | null
+          recipient_location: string | null
+          recipient_name: string | null
+          request_date: string | null
+          status: string | null
+          units_requested: number | null
+          urgency: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       [_ in never]: never

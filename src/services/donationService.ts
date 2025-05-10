@@ -9,6 +9,8 @@ export type BloodDonation = {
   location: string | null;
   notes: string | null;
   created_at: string;
+  latitude?: number | null;
+  longitude?: number | null;
 };
 
 export type BloodRequest = {
@@ -23,6 +25,8 @@ export type BloodRequest = {
   notes: string | null;
   created_at: string;
   updated_at: string;
+  latitude?: number | null;
+  longitude?: number | null;
 };
 
 export const getDonationHistory = async (): Promise<BloodDonation[]> => {
@@ -43,7 +47,9 @@ export const getDonationHistory = async (): Promise<BloodDonation[]> => {
   return data || [];
 };
 
-export const addDonation = async (donation: Omit<BloodDonation, 'id' | 'created_at'>): Promise<BloodDonation | null> => {
+export const addDonation = async (
+  donation: Omit<BloodDonation, 'id' | 'created_at'> & { latitude?: number | null; longitude?: number | null; }
+): Promise<BloodDonation | null> => {
   const { data: userResponse } = await supabase.auth.getUser();
   if (!userResponse.user) return null;
   
@@ -82,7 +88,10 @@ export const getBloodRequests = async (): Promise<BloodRequest[]> => {
   return data || [];
 };
 
-export const addBloodRequest = async (request: Omit<BloodRequest, 'id' | 'created_at' | 'updated_at' | 'user_id'>): Promise<BloodRequest | null> => {
+export const addBloodRequest = async (
+  request: Omit<BloodRequest, 'id' | 'created_at' | 'updated_at' | 'user_id'> & 
+  { latitude?: number | null; longitude?: number | null; }
+): Promise<BloodRequest | null> => {
   const { data: userResponse } = await supabase.auth.getUser();
   if (!userResponse.user) return null;
   
@@ -120,4 +129,55 @@ export const updateBloodRequest = async (id: string, updates: Partial<BloodReque
   }
   
   return data;
+};
+
+export const getRequestById = async (requestId: string): Promise<BloodRequest | null> => {
+  const { data, error } = await supabase
+    .from('blood_requests')
+    .select('*')
+    .eq('id', requestId)
+    .single();
+    
+  if (error) {
+    console.error('Error fetching blood request:', error);
+    return null;
+  }
+  
+  return data;
+};
+
+export const getNearbyDonors = async (bloodType: string, latitude: number, longitude: number, radiusKm: number = 10): Promise<any[]> => {
+  // This is a simplified version - in a real app, you would use PostGIS or a geolocation service
+  // to do proper radius search
+  
+  // For now, we'll just get all donors with the matching blood type
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('blood_type', bloodType)
+    .eq('is_donor', true)
+    .not('last_latitude', 'is', null)
+    .not('last_longitude', 'is', null);
+    
+  if (error) {
+    console.error('Error fetching nearby donors:', error);
+    return [];
+  }
+  
+  // Filter by distance (simplified)
+  // In a real app, use proper geospatial calculations
+  const nearbyDonors = data.filter(donor => {
+    if (!donor.last_latitude || !donor.last_longitude) return false;
+    
+    // Simple distance calculation (not accurate for large distances)
+    const latDiff = donor.last_latitude - latitude;
+    const lngDiff = donor.last_longitude - longitude;
+    const distanceSquared = latDiff * latDiff + lngDiff * lngDiff;
+    
+    // Rough approximation: 1 degree ≈ 111km at the equator
+    // So distanceSquared < (radiusKm/111)^2 is approximately within radiusKm
+    return distanceSquared < Math.pow(radiusKm/111, 2);
+  });
+  
+  return nearbyDonors;
 };

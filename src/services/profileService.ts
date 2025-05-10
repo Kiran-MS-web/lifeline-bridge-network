@@ -10,6 +10,9 @@ export type Profile = {
   is_donor: boolean | null;
   created_at: string;
   updated_at: string;
+  last_latitude?: number | null;
+  last_longitude?: number | null;
+  last_location_update?: string | null;
 };
 
 export const getProfile = async (): Promise<Profile | null> => {
@@ -48,6 +51,21 @@ export const updateProfile = async (profile: Partial<Profile>): Promise<Profile 
   
   if (error) {
     console.error('Error updating profile:', error);
+    return null;
+  }
+  
+  return data;
+};
+
+export const getProfileById = async (userId: string): Promise<Profile | null> => {
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', userId)
+    .single();
+  
+  if (error) {
+    console.error('Error fetching profile by ID:', error);
     return null;
   }
   

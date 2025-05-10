@@ -12,18 +12,30 @@ import {
 } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import BloodTypeSelector from '@/components/common/BloodTypeSelector';
+import LocationTracker from '@/components/common/LocationTracker';
 import { toast } from 'sonner';
+import { addBloodRequest } from '@/services/donationService';
+import { getUserLocation } from '@/services/locationService';
+import { useAuth } from '@/context/AuthContext';
 
 type BloodType = 'A+' | 'A-' | 'B+' | 'B-' | 'AB+' | 'AB-' | 'O+' | 'O-';
 
 const RequestForm: React.FC = () => {
+  const { user } = useAuth();
   const [selectedType, setSelectedType] = useState<BloodType | null>(null);
   const [urgency, setUrgency] = useState<string>('normal');
   const [needDelivery, setNeedDelivery] = useState<boolean>(false);
   const [location, setLocation] = useState<string>('');
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [shareLocation, setShareLocation] = useState<boolean>(true);
   
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!user) {
+      toast.error('Please sign in to submit a blood request');
+      return;
+    }
     
     if (!selectedType) {
       toast.error('Please select a blood type');
@@ -35,21 +47,51 @@ const RequestForm: React.FC = () => {
       return;
     }
     
-    // Here we would normally submit the form to an API
-    console.log({
-      bloodType: selectedType,
-      urgency,
-      needDelivery,
-      location
-    });
+    setIsSubmitting(true);
     
-    toast.success('Blood request submitted successfully!');
-    
-    // Reset form
-    setSelectedType(null);
-    setUrgency('normal');
-    setNeedDelivery(false);
-    setLocation('');
+    try {
+      let latitude = null;
+      let longitude = null;
+      
+      if (shareLocation) {
+        const userLocation = await getUserLocation();
+        if (userLocation) {
+          latitude = userLocation.latitude;
+          longitude = userLocation.longitude;
+        }
+      }
+      
+      const request = {
+        blood_type: selectedType,
+        urgency: urgency,
+        units_requested: 1,
+        request_date: new Date().toISOString(),
+        hospital_name: location,
+        status: 'pending',
+        notes: needDelivery ? 'Delivery needed' : '',
+        latitude: latitude,
+        longitude: longitude
+      };
+      
+      const result = await addBloodRequest(request);
+      
+      if (result) {
+        toast.success('Blood request submitted successfully!');
+        
+        // Reset form
+        setSelectedType(null);
+        setUrgency('normal');
+        setNeedDelivery(false);
+        setLocation('');
+      } else {
+        toast.error('Failed to submit request');
+      }
+    } catch (error) {
+      console.error('Error submitting request:', error);
+      toast.error('An error occurred while submitting your request');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
   
   return (
@@ -97,6 +139,30 @@ const RequestForm: React.FC = () => {
           />
         </div>
         
+        <div className="space-y-3">
+          <div className="flex items-start space-x-2 mb-2">
+            <Checkbox 
+              id="shareLocation" 
+              checked={shareLocation} 
+              onCheckedChange={(checked) => setShareLocation(checked === true)}
+            />
+            <Label 
+              htmlFor="shareLocation"
+              className="text-sm font-normal leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              Share my exact location to help donors find me faster
+            </Label>
+          </div>
+          
+          {shareLocation && (
+            <LocationTracker 
+              autoShare={false}
+              showMap={true}
+              className="mt-4"
+            />
+          )}
+        </div>
+        
         <div className="flex items-start space-x-2">
           <Checkbox 
             id="delivery" 
@@ -111,7 +177,13 @@ const RequestForm: React.FC = () => {
           </Label>
         </div>
         
-        <Button type="submit" className="w-full text-lg py-6">Submit Request</Button>
+        <Button 
+          type="submit" 
+          className="w-full text-lg py-6"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? 'Submitting...' : 'Submit Request'}
+        </Button>
       </form>
     </div>
   );
