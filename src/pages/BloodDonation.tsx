@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
@@ -9,7 +10,8 @@ import {
   CardContent, 
   CardDescription, 
   CardHeader, 
-  CardTitle 
+  CardTitle,
+  CardFooter 
 } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { 
@@ -29,9 +31,20 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { format } from 'date-fns';
-import { CalendarIcon, Droplets } from 'lucide-react';
+import { CalendarIcon, Droplets, FileCheck, Upload, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import EmergencyButton from '@/components/common/EmergencyButton';
 
 type BloodType = 'A+' | 'A-' | 'B+' | 'B-' | 'AB+' | 'AB-' | 'O+' | 'O-';
 
@@ -46,6 +59,37 @@ const BloodDonation: React.FC = () => {
   const [timeSlot, setTimeSlot] = useState('');
   const [isAvailableForEmergency, setIsAvailableForEmergency] = useState(false);
   const [lastDonationDate, setLastDonationDate] = useState<Date | undefined>(undefined);
+  const [currentStep, setCurrentStep] = useState(1);
+  const [isVerificationDialogOpen, setIsVerificationDialogOpen] = useState(false);
+  const [documentType, setDocumentType] = useState('');
+  const [documentFile, setDocumentFile] = useState<File | null>(null);
+  const [verificationSuccessful, setVerificationSuccessful] = useState(false);
+  
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setDocumentFile(e.target.files[0]);
+    }
+  };
+
+  const handleVerificationSubmit = () => {
+    if (!documentFile || !documentType) {
+      toast.error('Please select a document type and upload a file');
+      return;
+    }
+    
+    // In a real implementation, you would upload the file to a server here
+    // and perform verification checks
+    
+    // Simulate verification process with a delay
+    toast.loading('Verifying your document...');
+    
+    setTimeout(() => {
+      toast.dismiss();
+      toast.success('Verification successful!');
+      setVerificationSuccessful(true);
+      setIsVerificationDialogOpen(false);
+    }, 2000);
+  };
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -65,6 +109,11 @@ const BloodDonation: React.FC = () => {
       return;
     }
     
+    if (!verificationSuccessful) {
+      setIsVerificationDialogOpen(true);
+      return;
+    }
+    
     // Here we would normally submit the form to an API
     console.log({
       name,
@@ -76,7 +125,8 @@ const BloodDonation: React.FC = () => {
       date: date ? format(date, 'yyyy-MM-dd') : '',
       timeSlot,
       isAvailableForEmergency,
-      lastDonationDate: lastDonationDate ? format(lastDonationDate, 'yyyy-MM-dd') : 'First time donor'
+      lastDonationDate: lastDonationDate ? format(lastDonationDate, 'yyyy-MM-dd') : 'First time donor',
+      verified: true
     });
     
     toast.success('Blood donation scheduled successfully!');
@@ -90,6 +140,16 @@ const BloodDonation: React.FC = () => {
         <p className="text-muted-foreground mb-8 text-lg">
           Schedule a blood donation appointment at a center or request a home collection. Your donation can save up to three lives.
         </p>
+        
+        {verificationSuccessful && (
+          <div className="mb-6 bg-green-50 border border-green-200 rounded-md p-4 flex items-center gap-3">
+            <FileCheck className="h-6 w-6 text-green-600" />
+            <div>
+              <h3 className="font-medium text-green-800">Identity Verified</h3>
+              <p className="text-sm text-green-700">Your identity has been successfully verified.</p>
+            </div>
+          </div>
+        )}
         
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">
@@ -294,7 +354,20 @@ const BloodDonation: React.FC = () => {
                         </Label>
                       </div>
                       
-                      <Button type="submit" className="text-lg py-6 px-8">Schedule Donation</Button>
+                      <Button 
+                        type="submit" 
+                        className="text-lg py-6 px-8"
+                      >
+                        {verificationSuccessful ? 'Schedule Donation' : 'Continue to Verification'}
+                      </Button>
+                      
+                      <div className="flex items-center gap-2 text-amber-600 bg-amber-50 p-4 rounded-md">
+                        <AlertCircle size={20} />
+                        <p className="text-sm">
+                          Identity verification is required to complete your donation request. 
+                          You'll need to upload a valid ID or medical certificate.
+                        </p>
+                      </div>
                       
                       <p className="text-center text-sm text-muted-foreground mt-4">
                         By scheduling a donation, you agree to our 
@@ -482,6 +555,66 @@ const BloodDonation: React.FC = () => {
         </div>
       </main>
       <Footer />
+      <EmergencyButton />
+      
+      <AlertDialog open={isVerificationDialogOpen} onOpenChange={setIsVerificationDialogOpen}>
+        <AlertDialogContent className="max-w-md">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Identity Verification Required</AlertDialogTitle>
+            <AlertDialogDescription>
+              For security purposes, please upload a valid identification document or medical certificate
+              to verify your identity before scheduling a blood donation.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          
+          <div className="space-y-4 my-4">
+            <div className="space-y-3">
+              <Label htmlFor="document-type">Document Type</Label>
+              <Select value={documentType} onValueChange={setDocumentType}>
+                <SelectTrigger id="document-type">
+                  <SelectValue placeholder="Select document type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="national-id">National ID Card</SelectItem>
+                  <SelectItem value="passport">Passport</SelectItem>
+                  <SelectItem value="drivers-license">Driver's License</SelectItem>
+                  <SelectItem value="medical-certificate">Medical Certificate</SelectItem>
+                  <SelectItem value="hospital-letter">Hospital Authorization Letter</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="space-y-3">
+              <Label htmlFor="document-file">Upload Document</Label>
+              <div className="border-2 border-dashed border-muted-foreground/25 rounded-md p-6 text-center">
+                <Input
+                  id="document-file"
+                  type="file"
+                  className="hidden"
+                  accept="image/*, application/pdf"
+                  onChange={handleFileChange}
+                />
+                <Label htmlFor="document-file" className="cursor-pointer flex flex-col items-center justify-center gap-2">
+                  <Upload className="h-8 w-8 text-muted-foreground" />
+                  <span className="text-sm font-medium">
+                    {documentFile ? documentFile.name : 'Click to upload or drag and drop'}
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    Supported formats: JPEG, PNG, PDF (Max 10MB)
+                  </span>
+                </Label>
+              </div>
+            </div>
+          </div>
+          
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleVerificationSubmit}>
+              Verify Identity
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 };

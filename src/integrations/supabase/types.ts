@@ -157,6 +157,45 @@ export type Database = {
         }
         Relationships: []
       }
+      users: {
+        Row: {
+          blood_type: string | null
+          created_at: string | null
+          email: string
+          id: number
+          latitude: number | null
+          longitude: number | null
+          name: string
+          password: string
+          phone: string | null
+          role: string | null
+        }
+        Insert: {
+          blood_type?: string | null
+          created_at?: string | null
+          email: string
+          id?: number
+          latitude?: number | null
+          longitude?: number | null
+          name: string
+          password: string
+          phone?: string | null
+          role?: string | null
+        }
+        Update: {
+          blood_type?: string | null
+          created_at?: string | null
+          email?: string
+          id?: number
+          latitude?: number | null
+          longitude?: number | null
+          name?: string
+          password?: string
+          phone?: string | null
+          role?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
