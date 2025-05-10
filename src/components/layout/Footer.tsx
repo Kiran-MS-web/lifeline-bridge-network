@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Droplets, Phone, Mail, MapPin } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -10,7 +11,7 @@ const Footer = () => {
           <div className="space-y-4">
             <div className="flex items-center space-x-2">
               <Droplets size={28} className="text-primary" />
-              <span className="text-xl font-bold">LifeLine</span>
+              <span className="text-xl font-bold">LifeFlow</span>
             </div>
             <p className="text-muted-foreground">
               Connecting blood donors with recipients for a healthier community.
@@ -99,7 +100,7 @@ const Footer = () => {
         </div>
         
         <div className="border-t pt-8 mt-8 text-center text-muted-foreground">
-          <p>© {new Date().getFullYear()} LifeLine Blood Bridge Network. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} LifeFlow Blood Bridge Network. All rights reserved.</p>
           <p className="mt-2 text-sm">This platform is designed to be accessible for elderly and disabled users.</p>
         </div>
       </div>

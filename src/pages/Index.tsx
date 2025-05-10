@@ -6,6 +6,7 @@ import RequestForm from '@/components/home/RequestForm';
 import EmergencyButton from '@/components/common/EmergencyButton';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
+import BloodInventory from '@/components/home/BloodInventory';
 import { motion, useScroll, useTransform } from 'framer-motion';
 
 const Index: React.FC = () => {
@@ -72,6 +73,15 @@ const Index: React.FC = () => {
           transition={{ duration: 0.8 }}
         >
           <Features />
+        </motion.div>
+        
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+        >
+          <BloodInventory />
         </motion.div>
         
         <motion.section 

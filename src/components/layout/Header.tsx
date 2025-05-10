@@ -17,7 +17,7 @@ const Header = () => {
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         <Link to="/" className="flex items-center space-x-2">
           <Droplets size={32} className="text-primary" />
-          <span className="text-xl md:text-2xl font-bold">LifeLine</span>
+          <span className="text-xl md:text-2xl font-bold">LifeFlow</span>
         </Link>
 
         {/* Desktop Navigation */}
