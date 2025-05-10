@@ -21,7 +21,7 @@ export type ProfileWithLocation = {
   is_donor: boolean | null;
   created_at: string;
   updated_at: string;
-  last_latitude?: number | null;
-  last_longitude?: number | null;
-  last_location_update?: string | null;
+  last_latitude: number | null;
+  last_longitude: number | null;
+  last_location_update: string | null;
 };

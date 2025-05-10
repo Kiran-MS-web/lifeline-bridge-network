@@ -132,6 +132,9 @@ export type Database = {
           full_name: string | null
           id: string
           is_donor: boolean | null
+          last_latitude: number | null
+          last_location_update: string | null
+          last_longitude: number | null
           phone_number: string | null
           updated_at: string
         }
@@ -142,6 +145,9 @@ export type Database = {
           full_name?: string | null
           id: string
           is_donor?: boolean | null
+          last_latitude?: number | null
+          last_location_update?: string | null
+          last_longitude?: number | null
           phone_number?: string | null
           updated_at?: string
         }
@@ -152,6 +158,9 @@ export type Database = {
           full_name?: string | null
           id?: string
           is_donor?: boolean | null
+          last_latitude?: number | null
+          last_location_update?: string | null
+          last_longitude?: number | null
           phone_number?: string | null
           updated_at?: string
         }
